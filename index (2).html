@@ -1,0 +1,654 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Hansraj Memorial Hospital GBP Calendar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Hind:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a working posting calendar — summary strip, collapsible rules, sticky filters, week-grouped post cards with copy actions */
+:root{
+  --bg:#f5f6f8; --surface:#ffffff; --ink:#1f2330; --muted:#636a7d; --line:#dfe2ea;
+  --accent:#1d5c7a; --accent-soft:#e2eff5; --sage:#2f7d4f; --sage-soft:#e2f2e8;
+  --warn:#9a5b06; --warn-soft:#fbf0dc;
+  --f-display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body:"Hind", "Noto Sans Devanagari", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#14161c; --surface:#1c1f27; --ink:#e8e9ee; --muted:#9aa0b2; --line:#2e323d;
+  --accent:#7cc0e0; --accent-soft:#1d3240; --sage:#7cc4ad; --sage-soft:#1f3530;
+  --warn:#e6b25c; --warn-soft:#3a2c14; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#14161c; --surface:#1c1f27; --ink:#e8e9ee; --muted:#9aa0b2; --line:#2e323d;
+  --accent:#7cc0e0; --accent-soft:#1d3240; --sage:#7cc4ad; --sage-soft:#1f3530;
+  --warn:#e6b25c; --warn-soft:#3a2c14; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.55;padding-inline:16px;padding-block:24px 64px}
+.wrap{max-width:920px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(1.6rem,4vw,2.2rem);font-weight:700;letter-spacing:-.01em}
+.eyebrow{font-family:var(--f-mono);font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.sub{color:var(--muted);margin:6px 0 0}
+header{display:flex;flex-direction:column;gap:4px}
+.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;min-width:0}
+.stat .k{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.stat .v{font-family:var(--f-display);font-size:1.35rem;font-weight:700;font-variant-numeric:tabular-nums}
+.stat .v small{font-family:var(--f-body);font-size:.85rem;font-weight:500;color:var(--muted)}
+.bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin-top:8px}
+.bar i{display:block;height:100%;background:var(--sage);width:0;transition:width .3s}
+details.rules{background:var(--warn-soft);border-radius:10px;padding:12px 16px}
+details.rules summary{cursor:pointer;font-family:var(--f-display);font-weight:700;color:var(--warn);font-size:1.05rem}
+details.rules ul{margin:10px 0 4px;padding-left:20px;display:grid;gap:6px}
+.filters{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:10px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;border-bottom:1px solid var(--line)}
+.seg{display:flex;flex-wrap:wrap;gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:3px}
+.seg button{font:inherit;font-size:.88rem;border:0;background:transparent;color:var(--muted);padding:4px 10px;border-radius:6px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--surface)}
+.seg button:focus-visible,.btn:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.sync{font-family:var(--f-mono);font-size:.72rem;color:var(--muted);margin-left:auto}
+.week{display:flex;flex-direction:column;gap:12px}
+.week h2{font-size:.95rem;font-family:var(--f-mono);font-weight:500;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;padding-top:8px}
+.post{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:grid;grid-template-columns:76px 1fr;gap:16px;min-width:0}
+.post.done{opacity:.62}
+.post.next{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.date{text-align:center;font-family:var(--f-mono);display:flex;flex-direction:column;align-items:center;gap:2px}
+.date .d{font-family:var(--f-display);font-size:1.9rem;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+.date .m,.date .w{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.body{min-width:0;display:flex;flex-direction:column;gap:10px}
+.top{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.chip{font-family:var(--f-mono);font-size:.7rem;letter-spacing:.04em;padding:2px 8px;border-radius:999px;background:var(--bg);color:var(--muted);border:1px solid var(--line)}
+.chip.lang{background:var(--accent-soft);color:var(--accent);border-color:transparent}
+.chip.fest{background:var(--warn-soft);color:var(--warn);border-color:transparent}
+.chip.check{background:var(--warn);color:var(--surface);border-color:transparent}
+.chip.next{background:var(--accent);color:var(--surface);border-color:transparent}
+.post h3{font-size:1.15rem;font-weight:700}
+.kw{font-size:.88rem;color:var(--muted)}
+.kw b{color:var(--ink);font-weight:600}
+.block{border-top:1px dashed var(--line);padding-top:10px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.block .lbl{display:flex;justify-content:space-between;align-items:center;gap:8px;font-family:var(--f-mono);font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.cap{white-space:pre-line;overflow-wrap:anywhere}
+.prompt{font-size:.92rem;color:var(--muted);overflow-wrap:anywhere;white-space:pre-line}
+.cta{font-size:.9rem;overflow-wrap:anywhere}
+.cta code{font-family:var(--f-mono);font-size:.78rem;background:var(--bg);padding:2px 6px;border-radius:4px;word-break:break-all}
+.btn{font:inherit;font-family:var(--f-mono);font-size:.72rem;letter-spacing:.04em;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:3px 9px;border-radius:6px;cursor:pointer;text-transform:none}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.done-row{display:flex;align-items:center;gap:8px;font-weight:600}
+.done-row input{width:20px;height:20px;accent-color:var(--sage)}
+.done-row .when{font-weight:400;font-size:.82rem;color:var(--muted)}
+.empty{padding:32px;text-align:center;color:var(--muted);background:var(--surface);border:1px dashed var(--line);border-radius:12px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 16px;border-radius:8px;font-size:.9rem;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.show{opacity:1}
+@media (max-width:560px){.post{grid-template-columns:1fr;gap:10px}.date{flex-direction:row;gap:8px;justify-content:flex-start;align-items:baseline}.date .d{font-size:1.4rem}.sync{margin-left:0;width:100%}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Google Business Profile · Post calendar</div>
+    <h1>Hansraj Memorial Hospital</h1>
+    <p class="sub">Vinay Nagar, Gwalior · 3 Oct – 10 Dec 2026 · Har hafte 3 posts (Tue / Thu / Sat)</p>
+  </header>
+
+  <section class="summary" aria-label="Summary">
+    <div class="stat"><div class="k">Posted</div><div class="v" id="sPosted">0 <small>/ 30</small></div><div class="bar"><i id="sBar"></i></div></div>
+    <div class="stat"><div class="k">Agla post</div><div class="v" id="sNext">—</div></div>
+    <div class="stat"><div class="k">Pending (date nikal gayi)</div><div class="v" id="sLate">0</div></div>
+  </section>
+
+  <details class="rules">
+    <summary>Post karne se pehle (zaroor padhein)</summary>
+    <ul>
+      <li>Caption me <b>phone number mat likho</b>. GBP aise posts reject kar deta hai. Number ke liye CTA button use karo.</li>
+      <li>"Best", "No.1", "100% success", "guaranteed pregnancy" jaise shabd mat likho. Medical posts me ye claims reject ho sakte hain aur galat bhi hain.</li>
+      <li>Success rate ya kisi patient ki pehchaan wali detail kabhi mat daalna.</li>
+      <li>Ek hi image ya caption dobara use mat karo. Har post ka template color aur layout badlo.</li>
+      <li><b>Hospital ki services ki list abhi nahi mili hai.</b> Jis post pe "Service confirm karo" likha hai, use daalne se pehle client se poochho ki wo department ya doctor hospital me hai. Nahi hai to us post ko skip karo ya topic badlo.</li>
+      <li>Ye health-awareness posts hain. Inme bimari "theek karne" ka vaada mat jodna.</li>
+      <li>Image AI se banao (ChatGPT, Gemini ya Ideogram). Hindi text AI me galat aata hai, isliye Hindi Canva me khud likho.</li>
+      <li>Doctor, team aur hospital building wale posts me <b>asli photo</b> hi lagao, AI image nahi.</li>
+      <li>Har image pe Canva me hospital ka logo lagao.</li>
+      <li>CTA: "Call now" = profile ka number (link ki zarurat nahi), "Learn more" = website. Website pe us department ka page ho to wahi link do.</li>
+      <li>Post daalne ke baad yahan "Posted" tick karo, aur 7 din baad views/clicks tracker sheet me likho.</li>
+    </ul>
+  </details>
+
+  <div class="filters" role="toolbar" aria-label="Filters">
+    <div class="seg" data-f="month">
+      <button type="button" data-v="all" aria-pressed="true">Sab</button>
+      <button type="button" data-v="10" aria-pressed="false">Oct</button>
+      <button type="button" data-v="11" aria-pressed="false">Nov</button>
+      <button type="button" data-v="12" aria-pressed="false">Dec</button>
+    </div>
+    <div class="seg" data-f="lang">
+      <button type="button" data-v="all" aria-pressed="true">Dono</button>
+      <button type="button" data-v="EN" aria-pressed="false">English</button>
+      <button type="button" data-v="HI" aria-pressed="false">Hindi</button>
+    </div>
+    <div class="seg" data-f="status">
+      <button type="button" data-v="all" aria-pressed="true">Sab</button>
+      <button type="button" data-v="pending" aria-pressed="false">Pending</button>
+      <button type="button" data-v="posted" aria-pressed="false">Posted</button>
+    </div>
+    <span class="sync" id="sync">Status: is browser me save</span>
+  </div>
+
+  <main id="list"></main>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+const SITE = "https://www.hansrajmemorialhospital.com/?utm_source=google&utm_medium=organic&utm_campaign=gbp_hospital";
+const CTA = {learn:["Learn more",SITE],call:["Call now","Profile ka number (link nahi chahiye)"]};
+
+const POSTS = [
+ {
+  "id": "p-2026-10-03",
+  "date": "2026-10-03",
+  "lang": "EN",
+  "topic": "Welcome to Hansraj Memorial Hospital",
+  "kw": "hospital in Gwalior",
+  "cta": "learn",
+  "fest": null,
+  "check": false,
+  "caption": "Hansraj Memorial Hospital is located at Vinay Nagar, Sector 2, Gwalior, serving families from across the city and nearby towns.\n\nOur doctors, nurses and staff are committed to safe, timely and caring treatment for every patient. We believe good care also means clear communication, so patients and families understand the diagnosis, the treatment plan and the next steps.\n\nWhat you can expect when you visit us:\n• Consultation with qualified doctors\n• Clear explanation of tests and treatment\n• A clean and safe hospital environment\n• Support for patients and their families\n\nThe hospital is also home to Hansraj Fertility and IVF Center, a dedicated fertility unit led by an MCh specialist in Reproductive Medicine.\n\nVisit us or call the hospital to know about our departments, OPD timings and doctor availability. We look forward to caring for you and your family in Gwalior.",
+  "prompt": "USE A REAL PHOTO of the hospital building front (no AI). Add hospital name and logo in Canva.\n\nPhoto tips: shoot in landscape (4:3), in daylight or bright clinic light, phone held straight at eye level. Keep the background tidy. Export at 1200 × 900 px. Add the heading and logo in Canva, keep faces and the main subject clear of text.",
+  "headline": "Welcome to Hansraj Memorial Hospital"
+ },
+ {
+  "id": "p-2026-10-06",
+  "date": "2026-10-06",
+  "lang": "HI",
+  "topic": "ब्रेस्ट कैंसर: जल्दी पहचान ज़रूरी",
+  "kw": "breast cancer screening Gwalior",
+  "cta": "learn",
+  "fest": "Breast Cancer Awareness Month (Oct)",
+  "check": true,
+  "caption": "अक्टूबर को दुनियाभर में ब्रेस्ट कैंसर जागरूकता महीने के रूप में मनाया जाता है। भारत में ब्रेस्ट कैंसर महिलाओं में सबसे आम कैंसर में से एक है, और जल्दी पहचान से इलाज काफ़ी आसान हो जाता है।\n\nइन लक्षणों को नज़रअंदाज़ न करें:\n• ब्रेस्ट या बगल में गांठ, चाहे उसमें दर्द न हो\n• निप्पल से खून या कोई डिस्चार्ज\n• निप्पल का अंदर धंसना\n• त्वचा में गड्ढे, लालिमा या संतरे के छिलके जैसा दिखना\n• ब्रेस्ट के आकार या बनावट में अचानक बदलाव\n\nखुद जांच कैसे करें:\nहर महीने पीरियड खत्म होने के कुछ दिन बाद शीशे के सामने और लेटकर, उंगलियों से हल्के दबाव में पूरे ब्रेस्ट और बगल को जांचें।\n\nकिसे ज़्यादा ध्यान रखना चाहिए:\n40 साल से ज़्यादा उम्र की महिलाएं, और जिनके परिवार में ब्रेस्ट या ओवरी का कैंसर रहा हो। डॉक्टर की सलाह से नियमित स्क्रीनिंग करवाएं।\n\nकोई भी बदलाव दिखे तो डरें नहीं, जल्दी डॉक्टर से मिलें। Hansraj Memorial Hospital, विनय नगर, ग्वालियर।",
+  "prompt": "Pink ribbon on a soft pink and white background, elegant and respectful.\n\nFormat: 4:3 landscape, 1200 × 900 px (Google Business Profile post size).\nStyle: clean, modern healthcare graphic, soft natural lighting, high detail, professional and warm, not cartoonish.\nBrand colours to include: deep teal blue (#1d5c7a), fresh green, white and light grey.\nPeople (if shown): Indian people with natural, respectful expressions and modest clothing.\nComposition: main subject centre-right; keep the top-left third plain and uncluttered for a heading and the logo.\nAvoid: any text, letters or numbers, watermarks, logos, gore or graphic medical detail, close-up needles, distorted hands or faces.",
+  "headline": "ब्रेस्ट कैंसर: जल्दी पहचान ज़रूरी"
+ },
+ {
+  "id": "p-2026-10-08",
+  "date": "2026-10-08",
+  "lang": "EN",
+  "topic": "Dengue season: know the warning signs",
+  "kw": "dengue treatment Gwalior",
+  "cta": "call",
+  "fest": null,
+  "check": true,
+  "caption": "Dengue cases rise every year after the monsoon, and October is a high-risk month in Gwalior and nearby areas. Dengue spreads through the bite of the Aedes mosquito, which breeds in clean, stagnant water and bites mostly during the day.\n\nCommon symptoms:\n• Sudden high fever\n• Severe headache and pain behind the eyes\n• Body, muscle and joint pain\n• Rash, nausea or vomiting\n\nWarning signs that need urgent care:\n• Bleeding from gums or nose\n• Black stools or blood in vomit\n• Severe stomach pain or constant vomiting\n• Extreme weakness, restlessness or cold hands and feet\n\nWhat to do:\n• Drink plenty of fluids like water, ORS and coconut water\n• Take only paracetamol for fever, and avoid painkillers like aspirin or ibuprofen unless a doctor advises\n• Get a blood test if fever lasts more than 2 days\n\nPrevention:\nEmpty coolers, pots and tyres every week, use nets and repellents, and wear full-sleeve clothes.\n\nIf you have fever with these symptoms, consult a doctor at Hansraj Memorial Hospital, Vinay Nagar, Gwalior.",
+  "prompt": "Clean illustration of a mosquito with a red warning sign, a thermometer and a water pot, modern flat style.\n\nFormat: 4:3 landscape, 1200 × 900 px (Google Business Profile post size).\nStyle: clean, modern healthcare graphic, soft natural lighting, high detail, professional and warm, not cartoonish.\nBrand colours to include: deep teal blue (#1d5c7a), fresh green, white and light grey.\nPeople (if shown): Indian people with natural, respectful expressions and modest clothing.\nComposition: main subject centre-right; keep the top-left third plain and uncluttered for a heading and the logo.\nAvoid: any text, letters or numbers, watermarks, logos, gore or graphic medical detail, close-up needles, distorted hands or faces.",
+  "headline": "Dengue season: know the warning signs"
+ },
+ {
+  "id": "p-2026-10-10",
+  "date": "2026-10-10",
+  "lang": "HI",
+  "topic": "विश्व मानसिक स्वास्थ्य दिवस",
+  "kw": "mental health awareness Gwalior",
+  "cta": "learn",
+  "fest": "World Mental Health Day (10 Oct)",
+  "check": false,
+  "caption": "आज विश्व मानसिक स्वास्थ्य दिवस है। मन की सेहत भी शरीर की सेहत जितनी ही ज़रूरी है, लेकिन अक्सर हम इस पर बात करने से कतराते हैं।\n\nतनाव, चिंता और उदासी किसी को भी हो सकती है: छात्रों को, कामकाजी लोगों को, गृहिणियों को और बुज़ुर्गों को भी।\n\nइन संकेतों पर ध्यान दें:\n• दो हफ्ते से ज़्यादा लगातार उदासी या चिड़चिड़ापन\n• नींद बहुत कम या बहुत ज़्यादा आना\n• भूख में बड़ा बदलाव\n• किसी भी काम में मन न लगना\n• हर समय थकान या बेचैनी\n• लोगों से दूरी बनाना\n\nमन को स्वस्थ रखने के आसान तरीके:\n• रोज़ थोड़ी देर टहलें या व्यायाम करें\n• परिवार और दोस्तों से खुलकर बात करें\n• मोबाइल और स्क्रीन का समय सीमित करें\n• पूरी नींद लें\n\nमदद मांगना कमज़ोरी नहीं, समझदारी है। ज़रूरत हो तो डॉक्टर से सलाह लेने में संकोच न करें।\n\n– Hansraj Memorial Hospital, विनय नगर, ग्वालियर",
+  "prompt": "Soft illustration of a human head silhouette with flowers and leaves growing inside, calm green and blue tones.\n\nFormat: 4:3 landscape, 1200 × 900 px (Google Business Profile post size).\nStyle: clean, modern healthcare graphic, soft natural lighting, high detail, professional and warm, not cartoonish.\nBrand colours to include: deep teal blue (#1d5c7a), fresh green, white and light grey.\nPeople (if shown): Indian people with natural, respectful expressions and modest clothing.\nComposition: main subject centre-right; keep the top-left third plain and uncluttered for a heading and the logo.\nAvoid: any text, letters or numbers, watermarks, logos, gore or graphic medical detail, close-up needles, distorted hands or faces.",
+  "headline": "विश्व मानसिक स्वास्थ्य दिवस"
+ },
+ {
+  "id": "p-2026-10-13",
+  "date": "2026-10-13",
+  "lang": "EN",
+  "topic": "Healthy fasting this Navratri",
+  "kw": "hospital in Vinay Nagar Gwalior",
+  "cta": "learn",
+  "fest": "Navratri (11–19 Oct)",
+  "check": false,
+  "caption": "Many families in Gwalior keep fasts during Navratri. Fasting can be done safely with a little planning.\n\nTips for a healthy fast:\n• Drink plenty of water, coconut water, lemon water and buttermilk to avoid dehydration\n• Eat fresh fruits, curd, roasted makhana, nuts and sabudana in small portions\n• Choose roasted or steamed food over deep-fried pakoras and puris\n• Use rock salt (sendha namak) in moderation\n• Don't stay empty-stomach for very long hours\n• Break the fast with light food, not a heavy meal\n\nWho should talk to a doctor before fasting:\n• People with diabetes, as sugar can drop or rise suddenly\n• People with high BP or heart disease\n• Pregnant and breastfeeding women\n• Elderly people and those on regular medicines\n• Anyone with kidney problems or acidity issues\n\nWarning signs to stop fasting and seek help: dizziness, fainting, palpitations, severe weakness or very low urine.\n\nWishing you a healthy and happy Navratri from Hansraj Memorial Hospital, Vinay Nagar, Gwalior.",
+  "prompt": "Festive flat lay of fruits, makhana, curd bowl and a brass diya on a warm marigold background.\n\nFormat: 4:3 landscape, 1200 × 900 px (Google Business Profile post size).\nStyle: clean, modern healthcare graphic, soft natural lighting, high detail, professional and warm, not cartoonish.\nBrand colours to include: deep teal blue (#1d5c7a), fresh green, white and light grey, with warm festive gold and marigold accents.\nPeople (if shown): Indian people with natural, respectful expressions and modest clothing.\nComposition: main subject centre-right; keep the top-left third plain and uncluttered for a heading and the logo.\nAvoid: any text, letters or numbers, watermarks, logos, gore or graphic medical detail, close-up needles, distorted hands or faces.",
+  "headline": "Healthy fasting this Navratri"
+ },
+ {
+  "id": "p-2026-10-15",
+  "date": "2026-10-15",
+  "lang": "HI",
+  "topic": "हाई BP: खामोश खतरा",
+  "kw": "BP treatment Gwalior",
+  "cta": "call",
+  "fest": null,
+  "check": true,
+  "caption": "हाई ब्लड प्रेशर अक्सर बिना किसी लक्षण के सालों तक बढ़ता रहता है, इसलिए इसे 'साइलेंट किलर' कहा जाता है। लंबे समय तक कंट्रोल न हो तो यह हार्ट अटैक, स्ट्रोक और किडनी की बीमारी का बड़ा कारण बनता है।\n\nकुछ लोगों में ये लक्षण दिख सकते हैं:\n• सुबह सिर दर्द\n• चक्कर आना\n• धुंधला दिखना\n• सीने में भारीपन या सांस फूलना\n\nBP कंट्रोल के लिए:\n• खाने में नमक कम करें, अचार, पापड़ और नमकीन सीमित रखें\n• रोज़ 30 मिनट तेज़ चलें\n• वज़न कंट्रोल में रखें\n• धूम्रपान और शराब से दूर रहें\n• तनाव कम करें और पूरी नींद लें\n• दवाई रोज़ समय पर लें और डॉक्टर की सलाह के बिना बंद न करें\n\nसामान्य BP लगभग 120/80 mmHg माना जाता है। 30 साल के बाद साल में कम से कम एक बार BP ज़रूर जांचें, और अगर परिवार में किसी को BP या हार्ट की बीमारी है तो और ध्यान रखें।\n\nअपना BP जांचें और डॉक्टर से सलाह लें। Hansraj Memorial Hospital, विनय नगर, ग्वालियर।",
+  "prompt": "Clean illustration of a BP monitor with a heart icon, blue and red accents on white.\n\nFormat: 4:3 landscape, 1200 × 900 px (Google Business Profile post size).\nStyle: clean, modern healthcare graphic, soft natural lighting, high detail, professional and warm, not cartoonish.\nBrand colours to include: deep teal blue (#1d5c7a), fresh green, white and light grey.\nPeople (if shown): Indian people with natural, respectful expressions and modest clothing.\nComposition: main subject centre-right; keep the top-left third plain and uncluttered for a heading and the logo.\nAvoid: any text, letters or numbers, watermarks, logos, gore or graphic medical detail, close-up needles, distorted hands or faces.",
+  "headline": "हाई BP: खामोश खतरा"
+ },
+ {
+  "id": "p-2026-10-17",
+  "date": "2026-10-17",
+  "lang": "EN",
+  "topic": "Hand hygiene saves lives",
+  "kw": "hospital in Gwalior",
+  "cta": "learn",
+  "fest": "Global Handwashing Day (15 Oct)",
+  "check": false,
+  "caption": "Clean hands are one of the simplest and cheapest ways to prevent infections like diarrhoea, flu, typhoid, jaundice and worm infections, especially in children.\n\nWhen to wash your hands:\n• Before eating or cooking\n• After using the toilet or changing a baby's diaper\n• After coming home from outside or travelling\n• After coughing, sneezing or blowing your nose\n• Before and after visiting a patient\n• After touching animals or garbage\n\nThe right way to wash, for at least 20 seconds:\n1. Wet your hands and apply soap\n2. Rub palms together\n3. Clean the back of each hand\n4. Scrub between the fingers\n5. Clean the thumbs and fingertips\n6. Rinse well and dry with a clean towel\n\nIf soap and water are not available, use an alcohol-based sanitiser.\n\nTeach children to wash hands properly and make it a habit at home and school. A small habit can protect the whole family.\n\nStay healthy with Hansraj Memorial Hospital, Vinay Nagar, Gwalior.",
+  "prompt": "Bright illustration of hands washing with soap bubbles under a tap, fresh blue and white palette.\n\nFormat: 4:3 landscape, 1200 × 900 px (Google Business Profile post size).\nStyle: clean, modern healthcare graphic, soft natural lighting, high detail, professional and warm, not cartoonish.\nBrand colours to include: deep teal blue (#1d5c7a), fresh green, white and light grey.\nPeople (if shown): Indian people with natural, respectful expressions and modest clothing.\nComposition: main subject centre-right; keep the top-left third plain and uncluttered for a heading and the logo.\nAvoid: any text, letters or numbers, watermarks, logos, gore or graphic medical detail, close-up needles, distorted hands or faces.",
+  "headline": "Hand hygiene saves lives"
+ },
+ {
+  "id": "p-2026-10-20",
+  "date": "2026-10-20",
+  "lang": "HI",
+  "topic": "दशहरा की शुभकामनाएं",
+  "kw": "hospital in Gwalior",
+  "cta": "call",
+  "fest": "Dussehra (20 Oct)",
+  "check": false,
+  "caption": "आप सभी को विजयादशमी की हार्दिक शुभकामनाएं।\n\nयह पर्व आपके परिवार में अच्छी सेहत, खुशियां और नई ऊर्जा लाए।\n\n– Hansraj Memorial Hospital, विनय नगर, ग्वालियर",
+  "prompt": "Dussehra greeting: bow and arrow silhouette against a warm sunset, marigold border, festive and elegant.\n\nFormat: 4:3 landscape, 1200 × 900 px (Google Business Profile post size).\nStyle: clean, modern healthcare graphic, soft natural lighting, high detail, professional and warm, not cartoonish.\nBrand colours to include: deep teal blue (#1d5c7a), fresh green, white and light grey, with warm festive gold and marigold accents.\nPeople (if shown): Indian people with natural, respectful expressions and modest clothing.\nComposition: main subject centre-right; keep the top-left third plain and uncluttered for a heading and the logo.\nAvoid: any text, letters or numbers, watermarks, logos, gore or graphic medical detail, close-up needles, distorted hands or faces.",
+  "headline": "दशहरा की शुभकामनाएं"
+ },
+ {
+  "id": "p-2026-10-22",
+  "date": "2026-10-22",
+  "lang": "EN",
+  "topic": "Osteoporosis: keep your bones strong",
+  "kw": "bone health Gwalior",
+  "cta": "learn",
+  "fest": "World Osteoporosis Day (20 Oct)",
+  "check": true,
+  "caption": "Osteoporosis is a condition in which bones become thin, weak and easy to break. It often has no symptoms until a fracture happens, which is why it is called a silent disease.\n\nWho is at higher risk:\n• Women after menopause\n• Men and women above 50\n• People with low calcium or vitamin D\n• Those who smoke, drink alcohol or are physically inactive\n• People on long-term steroid medicines\n• Those with a family history of osteoporosis or hip fracture\n\nWarning signs:\n• Back pain or a stooped posture\n• Loss of height over time\n• Fractures from minor falls, especially of the hip, wrist or spine\n\nProtect your bones:\n• Eat calcium-rich food like milk, curd, paneer, ragi and green leafy vegetables\n• Get 15 to 20 minutes of morning sunlight for vitamin D\n• Walk regularly and do light strength exercises\n• Prevent falls at home with good lighting and non-slip floors\n\nAsk your doctor if you need a bone density (DEXA) test. Hansraj Memorial Hospital, Vinay Nagar, Gwalior.",
+  "prompt": "Minimal medical illustration of a healthy bone vs a porous bone side by side, clean blue palette.\n\nFormat: 4:3 landscape, 1200 × 900 px (Google Business Profile post size).\nStyle: clean, modern healthcare graphic, soft natural lighting, high detail, professional and warm, not cartoonish.\nBrand colours to include: deep teal blue (#1d5c7a), fresh green, white and light grey.\nPeople (if shown): Indian people with natural, respectful expressions and modest clothing.\nComposition: main subject centre-right; keep the top-left third plain and uncluttered for a heading and the logo.\nAvoid: any text, letters or numbers, watermarks, logos, gore or graphic medical detail, close-up needles, distorted hands or faces.",
+  "headline": "Osteoporosis: keep your bones strong"
+ },
+ {
+  "id": "p-2026-10-24",
+  "date": "2026-10-24",
+  "lang": "HI",
+  "topic": "डायबिटीज़ के शुरुआती संकेत",
+  "kw": "diabetes doctor Gwalior",
+  "cta": "call",
+  "fest": null,
+  "check": true,
+  "caption": "डायबिटीज़ आज भारत में तेज़ी से बढ़ती बीमारी है, और बहुत से लोगों को सालों तक पता ही नहीं चलता कि उनकी शुगर बढ़ी हुई है।\n\nइन शुरुआती संकेतों को हल्के में न लें:\n• बार-बार प्यास लगना\n• बार-बार पेशाब आना, खासकर रात में\n• बिना कारण वज़न घटना\n• हमेशा थकान और कमज़ोरी\n• घाव का देर से भरना\n• धुंधला दिखना\n• हाथ-पैरों में झनझनाहट\n• बार-बार इन्फेक्शन होना\n\nकिन्हें जांच ज़रूर करवानी चाहिए:\n• जिनकी उम्र 35 साल से ज़्यादा है\n• जिनके माता-पिता या भाई-बहन को डायबिटीज़ है\n• जिनका वज़न ज़्यादा है या पेट पर चर्बी है\n• जिन्हें BP या कोलेस्ट्रॉल की समस्या है\n• जिन महिलाओं को प्रेगनेंसी में शुगर हुई थी\n\nफास्टिंग शुगर और HbA1c जैसी साधारण जांच से पता चल जाता है। जल्दी पता चलने पर खान-पान, व्यायाम और सही इलाज से शुगर को कंट्रोल करना आसान होता है।\n\nHansraj Memorial Hospital, विनय नगर, ग्वालियर।",
+  "prompt": "Flat illustration of a glucometer, a water glass and a calendar, calm teal palette.\n\nFormat: 4:3 landscape, 1200 × 900 px (Google Business Profile post size).\nStyle: clean, modern healthcare graphic, soft natural lighting, high detail, professional and warm, not cartoonish.\nBrand colours to include: deep teal blue (#1d5c7a), fresh green, white and light grey.\nPeople (if shown): Indian people with natural, respectful expressions and modest clothing.\nComposition: main subject centre-right; keep the top-left third plain and uncluttered for a heading and the logo.\nAvoid: any text, letters or numbers, watermarks, logos, gore or graphic medical detail, close-up needles, distorted hands or faces.",
+  "headline": "डायबिटीज़ के शुरुआती संकेत"
+ },
+ {
+  "id": "p-2026-10-27",
+  "date": "2026-10-27",
+  "lang": "EN",
+  "topic": "Typhoid: causes and prevention",
+  "kw": "typhoid treatment Gwalior",
+  "cta": "call",
+  "fest": null,
+  "check": true,
+  "caption": "Typhoid is a bacterial infection that spreads through contaminated food and water. Cases are common after the rainy season, when water sources can get polluted.\n\nCommon symptoms:\n• Fever that rises slowly over several days\n• Weakness and body ache\n• Headache\n• Stomach pain, constipation or diarrhoea\n• Loss of appetite\n• In some people, a coated tongue or a mild rash\n\nWhy early diagnosis matters:\nTyphoid can be confused with other fevers. A doctor may advise blood tests to confirm it. Without proper treatment, it can lead to serious complications.\n\nPrevention:\n• Drink boiled or properly filtered water\n• Avoid uncovered street food, cut fruits and raw salads from outside\n• Wash hands with soap before eating and after using the toilet\n• Keep drinking water containers clean and covered\n• Ask your doctor about the typhoid vaccine, especially for children\n\nImportant: Don't take antibiotics on your own. Wrong or incomplete antibiotics can make typhoid harder to treat. Always complete the course your doctor prescribes.\n\nFor fever lasting more than 3 days, consult a doctor at Hansraj Memorial Hospital, Vinay Nagar, Gwalior.",
+  "prompt": "Clean illustration of a glass of clean water next to a covered food plate with a shield icon, fresh blue tones.\n\nFormat: 4:3 landscape, 1200 × 900 px (Google Business Profile post size).\nStyle: clean, modern healthcare graphic, soft natural lighting, high detail, professional and warm, not cartoonish.\nBrand colours to include: deep teal blue (#1d5c7a), fresh green, white and light grey.\nPeople (if shown): Indian people with natural, respectful expressions and modest clothing.\nComposition: main subject centre-right; keep the top-left third plain and uncluttered for a heading and the logo.\nAvoid: any text, letters or numbers, watermarks, logos, gore or graphic medical detail, close-up needles, distorted hands or faces.",
+  "headline": "Typhoid: causes and prevention"
+ },
+ {
+  "id": "p-2026-10-29",
+  "date": "2026-10-29",
+  "lang": "HI",
+  "topic": "स्ट्रोक के लक्षण पहचानें: BE FAST",
+  "kw": "stroke treatment Gwalior",
+  "cta": "call",
+  "fest": "World Stroke Day (29 Oct)",
+  "check": true,
+  "caption": "आज विश्व स्ट्रोक दिवस है। स्ट्रोक (लकवा) तब होता है जब दिमाग के किसी हिस्से में खून का बहाव रुक जाता है या नस फट जाती है। स्ट्रोक में हर मिनट कीमती होता है, क्योंकि जितनी जल्दी इलाज शुरू हो, नुकसान उतना कम होता है।\n\nलक्षण पहचानने के लिए BE FAST याद रखें:\n• B – Balance: अचानक संतुलन बिगड़ना या चक्कर\n• E – Eyes: अचानक एक या दोनों आंखों से धुंधला दिखना\n• F – Face: मुस्कुराने पर चेहरा एक तरफ लटकना\n• A – Arms: एक हाथ या पैर में अचानक कमज़ोरी या सुन्नपन\n• S – Speech: बोलने में लड़खड़ाहट या बात समझने में दिक्कत\n• T – Time: समय न गंवाएं, तुरंत अस्पताल पहुंचें\n\nक्या न करें:\n• घरेलू इलाज या झाड़-फूंक में समय न गंवाएं\n• मरीज़ को कुछ खिलाने-पिलाने की कोशिश न करें\n• \"थोड़ी देर में ठीक हो जाएगा\" सोचकर इंतज़ार न करें\n\nस्ट्रोक से बचाव के लिए BP, शुगर और कोलेस्ट्रॉल कंट्रोल में रखें और धूम्रपान छोड़ें।\n\n– Hansraj Memorial Hospital, विनय नगर, ग्वालियर",
+  "prompt": "Infographic style 'BE FAST' with six simple icons (balance, eye, face, arm, speech bubble, clock), red and navy palette.\n\nFormat: 4:3 landscape, 1200 × 900 px (Google Business Profile post size).\nStyle: clean, modern healthcare graphic, soft natural lighting, high detail, professional and warm, not cartoonish.\nBrand colours to include: deep teal blue (#1d5c7a), fresh green, white and light grey.\nPeople (if shown): Indian people with natural, respectful expressions and modest clothing.\nComposition: main subject centre-right; keep the top-left third plain and uncluttered for a heading and the logo.\nAvoid: any text, letters or numbers, watermarks, logos, gore or graphic medical detail, close-up needles, distorted hands or faces.",
+  "headline": "स्ट्रोक के लक्षण पहचानें: BE FAST"
+ },
+ {
+  "id": "p-2026-10-31",
+  "date": "2026-10-31",
+  "lang": "EN",
+  "topic": "Fertility care under one roof",
+  "kw": "IVF centre in Gwalior",
+  "cta": "learn",
+  "fest": null,
+  "check": false,
+  "caption": "Did you know that Hansraj Memorial Hospital also has a dedicated fertility unit?\n\nHansraj Fertility and IVF Center is a unit of Hansraj Memorial Hospital, located at Vinay Nagar, Sector 2, Gwalior. It is led by an MCh specialist in Reproductive Medicine, a super-speciality qualification focused on fertility and IVF.\n\nTreatments available at the centre:\n• Complete fertility evaluation for both partners\n• Follicular study and ovulation monitoring\n• IUI, IVF and ICSI\n• Blastocyst culture and frozen embryo transfer\n• Egg, sperm and embryo freezing\n• Laparoscopy and hysteroscopy for fertility problems\n\nBeing part of a hospital means couples get specialised fertility care with the support of a full hospital setup.\n\nWhen should a couple see a fertility specialist? If you have been trying for 1 year without success, or for 6 months if the woman is above 35, or earlier if there are irregular periods, PCOS or a known problem.\n\nCouples from Gwalior, Morena, Bhind, Datia and Dabra are welcome. Visit us at Vinay Nagar, Sector 2, Gwalior.",
+  "prompt": "Soft illustration of a couple holding a small paper heart, plum and blue palette, calm and hopeful.\n\nFormat: 4:3 landscape, 1200 × 900 px (Google Business Profile post size).\nStyle: clean, modern healthcare graphic, soft natural lighting, high detail, professional and warm, not cartoonish.\nBrand colours to include: deep teal blue (#1d5c7a), fresh green, white and light grey.\nPeople (if shown): Indian people with natural, respectful expressions and modest clothing.\nComposition: main subject centre-right; keep the top-left third plain and uncluttered for a heading and the logo.\nAvoid: any text, letters or numbers, watermarks, logos, gore or graphic medical detail, close-up needles, distorted hands or faces.",
+  "headline": "Fertility care under one roof"
+ },
+ {
+  "id": "p-2026-11-03",
+  "date": "2026-11-03",
+  "lang": "HI",
+  "topic": "बच्चों का टीकाकरण न भूलें",
+  "kw": "child vaccination Gwalior",
+  "cta": "call",
+  "fest": null,
+  "check": true,
+  "caption": "समय पर टीकाकरण बच्चों को खसरा, पोलियो, काली खांसी, टिटनेस, हेपेटाइटिस और निमोनिया जैसी कई गंभीर बीमारियों से बचाता है। यह बच्चे की सेहत के लिए सबसे आसान और असरदार सुरक्षा है।\n\nमाता-पिता के लिए ज़रूरी बातें:\n• जन्म से ही बच्चे का वैक्सीनेशन कार्ड बनवाएं और संभालकर रखें\n• हर टीके की तारीख याद रखें या फोन में रिमाइंडर लगाएं\n• कोई टीका छूट गया हो तो घबराएं नहीं, डॉक्टर से पूछकर पूरा करें\n• टीके के बाद हल्का बुखार, सूजन या चिड़चिड़ापन सामान्य है, जो 1-2 दिन में ठीक हो जाता है\n• तेज़ बुखार, लगातार रोना या सांस में तकलीफ़ हो तो डॉक्टर को दिखाएं\n\nकुछ अतिरिक्त टीके भी होते हैं, जैसे फ्लू, टाइफाइड, चिकनपॉक्स और HPV, जिनके बारे में डॉक्टर से सलाह ली जा सकती है।\n\nस्कूल जाने वाले बच्चों और किशोरों के बूस्टर डोज़ भी न भूलें।\n\nअपने बच्चे के टीकों के बारे में जानकारी के लिए डॉक्टर से मिलें। Hansraj Memorial Hospital, विनय नगर, ग्वालियर।",
+  "prompt": "Gentle illustration of a happy toddler with a parent and a small shield icon, soft pastel colours.\n\nFormat: 4:3 landscape, 1200 × 900 px (Google Business Profile post size).\nStyle: clean, modern healthcare graphic, soft natural lighting, high detail, professional and warm, not cartoonish.\nBrand colours to include: deep teal blue (#1d5c7a), fresh green, white and light grey.\nPeople (if shown): Indian people with natural, respectful expressions and modest clothing.\nComposition: main subject centre-right; keep the top-left third plain and uncluttered for a heading and the logo.\nAvoid: any text, letters or numbers, watermarks, logos, gore or graphic medical detail, close-up needles, distorted hands or faces.",
+  "headline": "बच्चों का टीकाकरण न भूलें"
+ },
+ {
+  "id": "p-2026-11-05",
+  "date": "2026-11-05",
+  "lang": "EN",
+  "topic": "Diwali safety: burns first aid",
+  "kw": "burn first aid Gwalior",
+  "cta": "call",
+  "fest": "Diwali (8 Nov)",
+  "check": false,
+  "caption": "Diwali is a time for lights and celebration, but every year many people, especially children, suffer burns and eye injuries from crackers and diyas. A little care keeps the festival safe.\n\nIf someone gets a minor burn:\n• Hold the area under cool (not ice-cold) running water for 15 to 20 minutes\n• Remove rings, bangles or tight items near the burn before swelling starts\n• Cover loosely with a clean cloth or cling film\n• Give paracetamol for pain if needed\n\nDo NOT:\n• Apply ice, toothpaste, butter, oil, haldi or ink\n• Burst blisters\n• Remove clothing stuck to the burn\n\nGo to a hospital immediately for:\n• Large or deep burns, or burns on the face, hands or private parts\n• Any burn in a small child or elderly person\n• Any eye injury from crackers, and do not rub the eye\n• Breathing difficulty after smoke exposure\n\nSafety tips:\n• Burst crackers in open spaces, away from vehicles and dry leaves\n• Wear cotton clothes, not synthetic\n• Keep a bucket of water and sand nearby\n• Always supervise children\n\nHave a safe and happy Diwali. Hansraj Memorial Hospital, Vinay Nagar, Gwalior.",
+  "prompt": "Safety poster style: a diya and sparkler with a water bucket and first-aid icon, warm festive colours with a clear safety feel.\n\nFormat: 4:3 landscape, 1200 × 900 px (Google Business Profile post size).\nStyle: clean, modern healthcare graphic, soft natural lighting, high detail, professional and warm, not cartoonish.\nBrand colours to include: deep teal blue (#1d5c7a), fresh green, white and light grey, with warm festive gold and marigold accents.\nPeople (if shown): Indian people with natural, respectful expressions and modest clothing.\nComposition: main subject centre-right; keep the top-left third plain and uncluttered for a heading and the logo.\nAvoid: any text, letters or numbers, watermarks, logos, gore or graphic medical detail, close-up needles, distorted hands or faces.",
+  "headline": "Diwali safety: burns first aid"
+ },
+ {
+  "id": "p-2026-11-07",
+  "date": "2026-11-07",
+  "lang": "HI",
+  "topic": "दीपावली की शुभकामनाएं",
+  "kw": "hospital in Gwalior",
+  "cta": "call",
+  "fest": "Dhanteras (6 Nov) · Diwali (8 Nov)",
+  "check": false,
+  "caption": "आपको और आपके परिवार को दीपावली की हार्दिक शुभकामनाएं।\n\nदीयों की रोशनी आपके घर में खुशियां और अच्छी सेहत लाए।\n\nसुरक्षित दीपावली मनाएं।\n\n– Hansraj Memorial Hospital, ग्वालियर",
+  "prompt": "Diwali greeting: rows of glowing clay diyas and rangoli on a deep blue background, golden light, elegant.\n\nFormat: 4:3 landscape, 1200 × 900 px (Google Business Profile post size).\nStyle: clean, modern healthcare graphic, soft natural lighting, high detail, professional and warm, not cartoonish.\nBrand colours to include: deep teal blue (#1d5c7a), fresh green, white and light grey, with warm festive gold and marigold accents.\nPeople (if shown): Indian people with natural, respectful expressions and modest clothing.\nComposition: main subject centre-right; keep the top-left third plain and uncluttered for a heading and the logo.\nAvoid: any text, letters or numbers, watermarks, logos, gore or graphic medical detail, close-up needles, distorted hands or faces.",
+  "headline": "दीपावली की शुभकामनाएं"
+ },
+ {
+  "id": "p-2026-11-10",
+  "date": "2026-11-10",
+  "lang": "EN",
+  "topic": "Breathing problems after Diwali smoke",
+  "kw": "asthma doctor Gwalior",
+  "cta": "learn",
+  "fest": null,
+  "check": true,
+  "caption": "Air quality often drops sharply after Diwali and in early winter because of cracker smoke, stubble burning, dust and cold, still air. This can trigger cough, throat irritation, breathlessness and asthma attacks.\n\nPeople at higher risk:\n• Children and elderly people\n• People with asthma, COPD or allergies\n• People with heart disease\n• Pregnant women\n• Smokers\n\nHow to protect yourself:\n• Stay indoors when the air looks smoky or hazy\n• Avoid morning walks on very polluted days, exercise indoors instead\n• Use a well-fitting N95 mask when you go outside\n• Keep windows closed during peak pollution hours\n• Drink warm water and fluids, and steam inhalation can soothe the throat\n• If you have asthma, keep your inhaler with you and don't skip preventer medicines\n\nSeek medical help if:\n• Breathlessness gets worse or happens at rest\n• There is wheezing or chest tightness\n• Lips or fingertips turn bluish\n• Your inhaler is not helping\n\nTake care of your lungs this season. Hansraj Memorial Hospital, Vinay Nagar, Gwalior.",
+  "prompt": "Illustration of a city skyline in light haze with a person wearing a mask, muted grey-blue palette.\n\nFormat: 4:3 landscape, 1200 × 900 px (Google Business Profile post size).\nStyle: clean, modern healthcare graphic, soft natural lighting, high detail, professional and warm, not cartoonish.\nBrand colours to include: deep teal blue (#1d5c7a), fresh green, white and light grey.\nPeople (if shown): Indian people with natural, respectful expressions and modest clothing.\nComposition: main subject centre-right; keep the top-left third plain and uncluttered for a heading and the logo.\nAvoid: any text, letters or numbers, watermarks, logos, gore or graphic medical detail, close-up needles, distorted hands or faces.",
+  "headline": "Breathing problems after Diwali smoke"
+ },
+ {
+  "id": "p-2026-11-12",
+  "date": "2026-11-12",
+  "lang": "HI",
+  "topic": "निमोनिया से बचाव",
+  "kw": "pneumonia treatment Gwalior",
+  "cta": "call",
+  "fest": "World Pneumonia Day (12 Nov)",
+  "check": true,
+  "caption": "आज विश्व निमोनिया दिवस है। निमोनिया फेफड़ों का इन्फेक्शन है, जिसमें फेफड़ों में सूजन और पानी भर जाता है। सर्दियों में छोटे बच्चों, बुज़ुर्गों और कमज़ोर इम्यूनिटी वाले लोगों में इसका खतरा बढ़ जाता है।\n\nइन लक्षणों पर ध्यान दें:\n• तेज़ बुखार और कंपकंपी\n• बलगम वाली खांसी\n• सांस फूलना या तेज़ सांस चलना\n• सीने में दर्द, खासकर सांस लेते समय\n• बहुत ज़्यादा कमज़ोरी\n\nबच्चों में खतरे के संकेत:\n• सांस लेते समय पसलियां अंदर धंसना\n• दूध पीना बंद कर देना\n• बहुत सुस्त रहना या बेहोशी\n\nबुज़ुर्गों में कई बार बुखार नहीं होता, बस भ्रम, कमज़ोरी या भूख कम होना ही संकेत होते हैं।\n\nबचाव:\n• बच्चों का टीकाकरण (PCV, Hib, खसरा) पूरा रखें\n• 65 साल से ज़्यादा उम्र वाले डॉक्टर से निमोनिया और फ्लू वैक्सीन के बारे में पूछें\n• धूम्रपान से दूर रहें\n• हाथ साफ़ रखें और सर्दी से बचें\n\nलक्षण दिखें तो देर न करें। Hansraj Memorial Hospital, विनय नगर, ग्वालियर।",
+  "prompt": "Clean illustration of lungs with a protective shield, soft blue and white palette.\n\nFormat: 4:3 landscape, 1200 × 900 px (Google Business Profile post size).\nStyle: clean, modern healthcare graphic, soft natural lighting, high detail, professional and warm, not cartoonish.\nBrand colours to include: deep teal blue (#1d5c7a), fresh green, white and light grey.\nPeople (if shown): Indian people with natural, respectful expressions and modest clothing.\nComposition: main subject centre-right; keep the top-left third plain and uncluttered for a heading and the logo.\nAvoid: any text, letters or numbers, watermarks, logos, gore or graphic medical detail, close-up needles, distorted hands or faces.",
+  "headline": "निमोनिया से बचाव"
+ },
+ {
+  "id": "p-2026-11-14",
+  "date": "2026-11-14",
+  "lang": "EN",
+  "topic": "World Diabetes Day",
+  "kw": "diabetes care Gwalior",
+  "cta": "call",
+  "fest": "World Diabetes Day · Children's Day (14 Nov)",
+  "check": true,
+  "caption": "Today is World Diabetes Day. Diabetes is one of the fastest-growing health problems in India, but with the right habits and regular follow-up, it can be managed well and complications can be prevented.\n\nDaily habits that help control diabetes:\n• Check your blood sugar as advised by your doctor\n• Take medicines or insulin on time, every day\n• Walk at least 30 minutes daily\n• Eat at regular times and avoid long gaps\n• Reduce sugar, sweets, maida, white rice and sugary drinks\n• Add more vegetables, dals, whole grains and salads\n• Sleep well and manage stress\n\nProtect yourself from complications:\n• Check your feet every day for cuts, blisters or wounds\n• Get your eyes checked once a year\n• Test kidney function and urine regularly\n• Keep BP and cholesterol under control\n• Get HbA1c tested every 3 months\n\nKnow the signs of low sugar: sweating, shaking, sudden hunger, confusion. Keep glucose or sugar handy.\n\nDiabetes is a lifelong condition, but not a life-limiting one. Consult a doctor at Hansraj Memorial Hospital, Vinay Nagar, Gwalior for regular diabetes follow-up.",
+  "prompt": "Blue circle (diabetes awareness symbol) with simple icons of a glucometer, shoes and a vegetable bowl around it, clean white background.\n\nFormat: 4:3 landscape, 1200 × 900 px (Google Business Profile post size).\nStyle: clean, modern healthcare graphic, soft natural lighting, high detail, professional and warm, not cartoonish.\nBrand colours to include: deep teal blue (#1d5c7a), fresh green, white and light grey.\nPeople (if shown): Indian people with natural, respectful expressions and modest clothing.\nComposition: main subject centre-right; keep the top-left third plain and uncluttered for a heading and the logo.\nAvoid: any text, letters or numbers, watermarks, logos, gore or graphic medical detail, close-up needles, distorted hands or faces.",
+  "headline": "World Diabetes Day"
+ },
+ {
+  "id": "p-2026-11-17",
+  "date": "2026-11-17",
+  "lang": "HI",
+  "topic": "विश्व प्रीमैच्योरिटी दिवस",
+  "kw": "newborn care Gwalior",
+  "cta": "learn",
+  "fest": "World Prematurity Day (17 Nov)",
+  "check": true,
+  "caption": "आज विश्व प्रीमैच्योरिटी दिवस है। जो बच्चे 37 हफ्ते से पहले जन्म लेते हैं, उन्हें प्रीमैच्योर कहा जाता है। ऐसे बच्चों को सांस, दूध पीने, वज़न बढ़ने और शरीर का तापमान बनाए रखने में खास देखभाल की ज़रूरत होती है।\n\nप्रीमैच्योर डिलीवरी का खतरा कब बढ़ता है:\n• प्रेगनेंसी में हाई BP या शुगर\n• जुड़वां या ज़्यादा बच्चे\n• पहले प्रीमैच्योर डिलीवरी हुई हो\n• खून की कमी या इन्फेक्शन\n• बहुत कम या बहुत ज़्यादा उम्र में प्रेगनेंसी\n\nप्रेगनेंसी में क्या करें:\n• शुरुआत से ही नियमित चेकअप करवाएं\n• BP, शुगर और खून की जांच समय पर करवाएं\n• आयरन, कैल्शियम और फोलिक एसिड डॉक्टर की सलाह से लें\n• पौष्टिक खाना खाएं और तंबाकू से दूर रहें\n\nतुरंत डॉक्टर से मिलें अगर:\n• पेट में बार-बार दर्द या कसाव हो\n• ब्लीडिंग हो या पानी आने लगे\n• बच्चे की हलचल कम महसूस हो\n\nस्वस्थ मां, स्वस्थ बच्चा।\n\n– Hansraj Memorial Hospital, विनय नगर, ग्वालियर",
+  "prompt": "Soft watercolour of tiny baby feet held in an adult's hands, gentle purple and white palette.\n\nFormat: 4:3 landscape, 1200 × 900 px (Google Business Profile post size).\nStyle: clean, modern healthcare graphic, soft natural lighting, high detail, professional and warm, not cartoonish.\nBrand colours to include: deep teal blue (#1d5c7a), fresh green, white and light grey.\nPeople (if shown): Indian people with natural, respectful expressions and modest clothing.\nComposition: main subject centre-right; keep the top-left third plain and uncluttered for a heading and the logo.\nAvoid: any text, letters or numbers, watermarks, logos, gore or graphic medical detail, close-up needles, distorted hands or faces.",
+  "headline": "विश्व प्रीमैच्योरिटी दिवस"
+ },
+ {
+  "id": "p-2026-11-19",
+  "date": "2026-11-19",
+  "lang": "EN",
+  "topic": "Annual health check-up: why it matters",
+  "kw": "full body checkup Gwalior",
+  "cta": "call",
+  "fest": null,
+  "check": true,
+  "caption": "Many common health problems like diabetes, high BP, thyroid disorders, high cholesterol, anaemia and fatty liver don't show clear symptoms in the early stage. By the time symptoms appear, the condition may have progressed.\n\nA regular health check-up helps you:\n• Catch problems early, when they are easier to manage\n• Track your health numbers over the years\n• Adjust medicines and lifestyle on time\n• Plan better for your family's health\n\nWho should get a check-up every year:\n• Everyone above 35 years\n• People with a family history of diabetes, heart disease or cancer\n• People who smoke, drink alcohol or have a desk job with little activity\n• Women after 40, and after menopause\n• Anyone already on BP, sugar or thyroid medicines\n\nA basic check-up usually includes:\nBlood sugar, BP, cholesterol, kidney and liver function, thyroid, haemoglobin and urine tests. Your doctor may add tests based on your age and history.\n\nTip: For blood sugar and cholesterol tests, come fasting (8 to 10 hours without food, water is fine).\n\nAsk at Hansraj Memorial Hospital, Vinay Nagar, Gwalior, about health check-up options for you and your family.",
+  "prompt": "Flat illustration of a clipboard checklist with a stethoscope and heart icon, clean blue and green palette.\n\nFormat: 4:3 landscape, 1200 × 900 px (Google Business Profile post size).\nStyle: clean, modern healthcare graphic, soft natural lighting, high detail, professional and warm, not cartoonish.\nBrand colours to include: deep teal blue (#1d5c7a), fresh green, white and light grey.\nPeople (if shown): Indian people with natural, respectful expressions and modest clothing.\nComposition: main subject centre-right; keep the top-left third plain and uncluttered for a heading and the logo.\nAvoid: any text, letters or numbers, watermarks, logos, gore or graphic medical detail, close-up needles, distorted hands or faces.",
+  "headline": "Annual health check-up: why it matters"
+ },
+ {
+  "id": "p-2026-11-21",
+  "date": "2026-11-21",
+  "lang": "HI",
+  "topic": "महिलाओं में खून की कमी (एनीमिया)",
+  "kw": "anemia treatment Gwalior",
+  "cta": "call",
+  "fest": null,
+  "check": true,
+  "caption": "भारत में बहुत सी महिलाएं और किशोरियां एनीमिया (खून की कमी) से प्रभावित हैं, और कई बार इसे सामान्य थकान समझकर नज़रअंदाज़ कर दिया जाता है।\n\nएनीमिया के लक्षण:\n• जल्दी थकान और कमज़ोरी\n• चक्कर आना, सिर दर्द\n• थोड़ा चलने पर सांस फूलना\n• चेहरा, होंठ और नाखून पीले दिखना\n• दिल की धड़कन तेज़ होना\n• बाल झड़ना और हाथ-पैर ठंडे रहना\n\nएनीमिया के आम कारण:\n• खाने में आयरन की कमी\n• पीरियड्स में ज़्यादा ब्लीडिंग\n• प्रेगनेंसी और स्तनपान\n• पेट में कीड़े\n\nबचाव और सुधार:\n• हरी पत्तेदार सब्ज़ियां, गुड़, चना, राजमा, अनार, खजूर खाएं\n• आयरन के साथ विटामिन C (नींबू, आंवला, संतरा) लें, इससे आयरन अच्छे से पचता है\n• खाने के तुरंत बाद चाय या कॉफी न पिएं\n• डॉक्टर की सलाह से आयरन और फोलिक एसिड की गोली लें\n• साल में एक बार पेट के कीड़ों की दवाई लें\n\nएक साधारण खून की जांच (Hb) से एनीमिया का पता चल जाता है। प्रेगनेंसी में यह जांच बहुत ज़रूरी है।\n\nHansraj Memorial Hospital, विनय नगर, ग्वालियर।",
+  "prompt": "Illustration of leafy greens, pomegranate and jaggery with a red drop icon, warm and healthy palette.\n\nFormat: 4:3 landscape, 1200 × 900 px (Google Business Profile post size).\nStyle: clean, modern healthcare graphic, soft natural lighting, high detail, professional and warm, not cartoonish.\nBrand colours to include: deep teal blue (#1d5c7a), fresh green, white and light grey.\nPeople (if shown): Indian people with natural, respectful expressions and modest clothing.\nComposition: main subject centre-right; keep the top-left third plain and uncluttered for a heading and the logo.\nAvoid: any text, letters or numbers, watermarks, logos, gore or graphic medical detail, close-up needles, distorted hands or faces.",
+  "headline": "महिलाओं में खून की कमी (एनीमिया)"
+ },
+ {
+  "id": "p-2026-11-24",
+  "date": "2026-11-24",
+  "lang": "EN",
+  "topic": "Kidney stones: signs and prevention",
+  "kw": "kidney stone treatment Gwalior",
+  "cta": "call",
+  "fest": null,
+  "check": true,
+  "caption": "Kidney stones are hard deposits of minerals that form inside the kidneys. They can be very small or large, and when they move, they can cause sudden, severe pain.\n\nCommon signs:\n• Sharp, severe pain in the back or side, often spreading to the lower abdomen or groin\n• Pain that comes in waves\n• Pain or burning while passing urine\n• Pink, red or brown urine\n• Nausea or vomiting\n• Frequent urge to pass urine\n\nWho is at higher risk:\n• People who drink less water, especially in hot weather\n• Those who eat a lot of salt or processed food\n• People with a family history of stones\n• Those with obesity or diabetes\n\nLower your risk:\n• Drink 2.5 to 3 litres of water a day, unless your doctor says otherwise\n• Reduce salt and packaged food\n• Don't hold urine for long\n• Include lemon water and fresh fruits\n• Limit excess cold drinks and very high-protein diets\n\nGo to the hospital urgently if pain comes with fever and chills, if you can't pass urine, or if vomiting does not stop.\n\nConsult a doctor at Hansraj Memorial Hospital, Vinay Nagar, Gwalior.",
+  "prompt": "Clean medical illustration of a kidney with a small stone and a water glass, calm blue palette.\n\nFormat: 4:3 landscape, 1200 × 900 px (Google Business Profile post size).\nStyle: clean, modern healthcare graphic, soft natural lighting, high detail, professional and warm, not cartoonish.\nBrand colours to include: deep teal blue (#1d5c7a), fresh green, white and light grey.\nPeople (if shown): Indian people with natural, respectful expressions and modest clothing.\nComposition: main subject centre-right; keep the top-left third plain and uncluttered for a heading and the logo.\nAvoid: any text, letters or numbers, watermarks, logos, gore or graphic medical detail, close-up needles, distorted hands or faces.",
+  "headline": "Kidney stones: signs and prevention"
+ },
+ {
+  "id": "p-2026-11-26",
+  "date": "2026-11-26",
+  "lang": "HI",
+  "topic": "कब मिलें फर्टिलिटी स्पेशलिस्ट से?",
+  "kw": "fertility clinic Gwalior",
+  "cta": "learn",
+  "fest": null,
+  "check": false,
+  "caption": "अगर आप 1 साल से प्रेगनेंसी के लिए कोशिश कर रहे हैं और सफलता नहीं मिल रही, तो फर्टिलिटी जांच करवाना सही कदम है। अगर महिला की उम्र 35 साल से ज़्यादा है, तो 6 महीने बाद ही विशेषज्ञ से मिलें।\n\nइन स्थितियों में और जल्दी सलाह लें:\n• पीरियड्स बहुत अनियमित हों\n• PCOS, थायरॉइड या एंडोमेट्रियोसिस हो\n• पहले मिसकैरेज हुआ हो\n• पुरुष पार्टनर की रिपोर्ट में कमी हो\n\nध्यान रखें, इनफर्टिलिटी सिर्फ़ महिला की समस्या नहीं है। पति और पत्नी दोनों की जांच एक साथ होनी चाहिए।\n\nHansraj Memorial Hospital की यूनिट Hansraj Fertility and IVF Center में ये सुविधाएं उपलब्ध हैं:\n• पति-पत्नी दोनों की पूरी फर्टिलिटी जांच\n• फॉलिक्युलर स्टडी, IUI, IVF और ICSI\n• Blastocyst culture और frozen embryo transfer\n• Egg, sperm और embryo freezing\n• लैप्रोस्कोपी और हिस्टेरोस्कोपी\n\nसेंटर का नेतृत्व Reproductive Medicine में MCh विशेषज्ञ करते हैं।\n\nविनय नगर, सेक्टर 2, ग्वालियर। मुरैना, भिंड, दतिया और डबरा के दंपति भी पहले से अपॉइंटमेंट लेकर आ सकते हैं।",
+  "prompt": "Soft illustration of an Indian couple looking at a calendar together, plum and blue palette, different layout from earlier posts.\n\nFormat: 4:3 landscape, 1200 × 900 px (Google Business Profile post size).\nStyle: clean, modern healthcare graphic, soft natural lighting, high detail, professional and warm, not cartoonish.\nBrand colours to include: deep teal blue (#1d5c7a), fresh green, white and light grey.\nPeople (if shown): Indian people with natural, respectful expressions and modest clothing.\nComposition: main subject centre-right; keep the top-left third plain and uncluttered for a heading and the logo.\nAvoid: any text, letters or numbers, watermarks, logos, gore or graphic medical detail, close-up needles, distorted hands or faces.",
+  "headline": "कब मिलें फर्टिलिटी स्पेशलिस्ट से?"
+ },
+ {
+  "id": "p-2026-11-28",
+  "date": "2026-11-28",
+  "lang": "EN",
+  "topic": "Winter and heart health",
+  "kw": "heart care Gwalior",
+  "cta": "call",
+  "fest": null,
+  "check": true,
+  "caption": "Cold weather makes blood vessels narrow, which can raise blood pressure and put extra load on the heart. That is why heart attacks are more common in winter, especially in the elderly and people with existing heart disease, BP or diabetes.\n\nProtect your heart this winter:\n• Keep yourself warm, especially in the early morning and at night. Wear layers, cap and socks\n• Don't skip BP, sugar, heart or cholesterol medicines\n• Avoid heavy exercise in very cold mornings. Walk later in the day when it is warmer\n• Limit salty and fried winter snacks, and heavy, late dinners\n• Avoid smoking and alcohol\n• Keep a check on BP more often in winter\n• Stay active indoors with light exercise or yoga\n\nKnow the warning signs of a heart attack:\n• Chest pain, pressure or heaviness\n• Pain spreading to the left arm, jaw, neck or back\n• Sweating, breathlessness or nausea\n• Sudden extreme weakness\n\nIn women, diabetics and the elderly, symptoms may be milder, like only breathlessness or tiredness.\n\nThese symptoms need emergency care right away. Don't wait. Hansraj Memorial Hospital, Vinay Nagar, Gwalior.",
+  "prompt": "Illustration of a red heart wrapped in a warm knitted scarf, winter tones, clean background.\n\nFormat: 4:3 landscape, 1200 × 900 px (Google Business Profile post size).\nStyle: clean, modern healthcare graphic, soft natural lighting, high detail, professional and warm, not cartoonish.\nBrand colours to include: deep teal blue (#1d5c7a), fresh green, white and light grey.\nPeople (if shown): Indian people with natural, respectful expressions and modest clothing.\nComposition: main subject centre-right; keep the top-left third plain and uncluttered for a heading and the logo.\nAvoid: any text, letters or numbers, watermarks, logos, gore or graphic medical detail, close-up needles, distorted hands or faces.",
+  "headline": "Winter and heart health"
+ },
+ {
+  "id": "p-2026-12-01",
+  "date": "2026-12-01",
+  "lang": "HI",
+  "topic": "विश्व एड्स दिवस",
+  "kw": "HIV test Gwalior",
+  "cta": "learn",
+  "fest": "World AIDS Day (1 Dec)",
+  "check": false,
+  "caption": "आज विश्व एड्स दिवस है। HIV के बारे में सही जानकारी ही बचाव का सबसे बड़ा तरीका है, और भेदभाव खत्म करना हम सबकी ज़िम्मेदारी है।\n\nHIV कैसे फैलता है:\n• असुरक्षित यौन संबंध से\n• संक्रमित सुई या सिरिंज के इस्तेमाल से\n• बिना जांचे खून चढ़ाने से\n• संक्रमित मां से बच्चे को, अगर समय पर इलाज न हो\n\nHIV कैसे नहीं फैलता:\n• छूने, हाथ मिलाने या गले मिलने से\n• साथ खाना खाने या बर्तन बांटने से\n• खांसी, छींक या मच्छर के काटने से\n• एक ही टॉयलेट इस्तेमाल करने से\n\nबचाव:\n• सुरक्षित यौन संबंध रखें\n• हमेशा नई सुई और सिरिंज का इस्तेमाल हो\n• प्रेगनेंसी में HIV जांच ज़रूर करवाएं\n\nजांच गोपनीय होती है। आज की दवाइयों (ART) से HIV पॉज़िटिव व्यक्ति भी लंबा और सामान्य जीवन जी सकता है।\n\nभेदभाव नहीं, जागरूकता फैलाएं।\n\n– Hansraj Memorial Hospital, विनय नगर, ग्वालियर",
+  "prompt": "Red ribbon on a clean white background with soft hands supporting it, respectful and minimal.\n\nFormat: 4:3 landscape, 1200 × 900 px (Google Business Profile post size).\nStyle: clean, modern healthcare graphic, soft natural lighting, high detail, professional and warm, not cartoonish.\nBrand colours to include: deep teal blue (#1d5c7a), fresh green, white and light grey.\nPeople (if shown): Indian people with natural, respectful expressions and modest clothing.\nComposition: main subject centre-right; keep the top-left third plain and uncluttered for a heading and the logo.\nAvoid: any text, letters or numbers, watermarks, logos, gore or graphic medical detail, close-up needles, distorted hands or faces.",
+  "headline": "विश्व एड्स दिवस"
+ },
+ {
+  "id": "p-2026-12-03",
+  "date": "2026-12-03",
+  "lang": "EN",
+  "topic": "Joint pain in winter",
+  "kw": "joint pain treatment Gwalior",
+  "cta": "call",
+  "fest": null,
+  "check": true,
+  "caption": "Many people, especially those above 50, feel more knee, back and joint pain in winter. Cold weather can make muscles stiff and joints less flexible, and people tend to move less.\n\nWhat helps:\n• Keep joints warm with layers, knee caps or a warm compress\n• Stay active with gentle exercise like walking, cycling or stretching\n• Do simple knee-strengthening exercises regularly\n• Maintain a healthy weight, as every extra kilo adds load on the knees\n• Get 15 to 20 minutes of morning sunlight for vitamin D\n• Include calcium-rich food like milk, curd and green vegetables\n• Avoid sitting cross-legged on the floor for long if your knees hurt\n• Use a firm chair and keep a straight posture\n\nAvoid taking painkillers regularly on your own, as they can affect the stomach and kidneys.\n\nSee a doctor if:\n• The joint is swollen, red or warm\n• Stiffness lasts more than 30 minutes in the morning\n• Pain stops you from walking or doing daily work\n• Pain follows a fall or injury\n• Joint pain comes with fever\n\nConsult a doctor at Hansraj Memorial Hospital, Vinay Nagar, Gwalior.",
+  "prompt": "Illustration of an elderly person doing gentle knee stretches in morning sunlight, warm soft palette.\n\nFormat: 4:3 landscape, 1200 × 900 px (Google Business Profile post size).\nStyle: clean, modern healthcare graphic, soft natural lighting, high detail, professional and warm, not cartoonish.\nBrand colours to include: deep teal blue (#1d5c7a), fresh green, white and light grey.\nPeople (if shown): Indian people with natural, respectful expressions and modest clothing.\nComposition: main subject centre-right; keep the top-left third plain and uncluttered for a heading and the logo.\nAvoid: any text, letters or numbers, watermarks, logos, gore or graphic medical detail, close-up needles, distorted hands or faces.",
+  "headline": "Joint pain in winter"
+ },
+ {
+  "id": "p-2026-12-05",
+  "date": "2026-12-05",
+  "lang": "HI",
+  "topic": "सर्दी-खांसी या फ्लू: कब डॉक्टर को दिखाएं",
+  "kw": "fever doctor Gwalior",
+  "cta": "call",
+  "fest": null,
+  "check": false,
+  "caption": "सर्दियों में सर्दी, खांसी, गले में खराश और फ्लू बहुत आम हैं। ज़्यादातर मामले वायरल होते हैं और 5 से 7 दिन में आराम, सही खान-पान और देखभाल से ठीक हो जाते हैं।\n\nघर पर क्या करें:\n• भरपूर आराम करें\n• गुनगुना पानी, सूप और काढ़ा जैसे गरम तरल पिएं\n• नमक वाले गुनगुने पानी से गरारे करें\n• भाप लें\n• बुखार के लिए डॉक्टर की सलाह से पैरासिटामॉल लें\n• खांसते-छींकते समय मुंह ढकें और हाथ साफ़ रखें\n\nडॉक्टर को तुरंत दिखाएं अगर:\n• बुखार 3 दिन से ज़्यादा रहे या बहुत तेज़ हो\n• सांस लेने में तकलीफ़ या सीने में दर्द हो\n• खांसी 2 हफ्ते से ज़्यादा रहे या बलगम में खून आए\n• बच्चा दूध पीना या खाना छोड़ दे, या बहुत सुस्त हो\n• बुज़ुर्ग में ज़्यादा कमज़ोरी, भ्रम या भूख न लगना हो\n• अस्थमा, डायबिटीज़ या हार्ट के मरीज़ों को फ्लू हो\n\nज़रूरी बात: सर्दी-ज़ुकाम ज़्यादातर वायरल होता है, जिसमें एंटीबायोटिक काम नहीं करती। बिना डॉक्टर की सलाह के एंटीबायोटिक न लें।\n\nबुज़ुर्ग और पुरानी बीमारी वाले लोग फ्लू वैक्सीन के बारे में डॉक्टर से पूछ सकते हैं।\n\nHansraj Memorial Hospital, विनय नगर, ग्वालियर।",
+  "prompt": "Cosy illustration of a person with a blanket, a cup of warm tea and a thermometer, soft winter blues.\n\nFormat: 4:3 landscape, 1200 × 900 px (Google Business Profile post size).\nStyle: clean, modern healthcare graphic, soft natural lighting, high detail, professional and warm, not cartoonish.\nBrand colours to include: deep teal blue (#1d5c7a), fresh green, white and light grey.\nPeople (if shown): Indian people with natural, respectful expressions and modest clothing.\nComposition: main subject centre-right; keep the top-left third plain and uncluttered for a heading and the logo.\nAvoid: any text, letters or numbers, watermarks, logos, gore or graphic medical detail, close-up needles, distorted hands or faces.",
+  "headline": "सर्दी-खांसी या फ्लू: कब डॉक्टर को दिखाएं"
+ },
+ {
+  "id": "p-2026-12-08",
+  "date": "2026-12-08",
+  "lang": "EN",
+  "topic": "Thyroid problems in women",
+  "kw": "thyroid doctor Gwalior",
+  "cta": "call",
+  "fest": null,
+  "check": true,
+  "caption": "The thyroid is a small butterfly-shaped gland in the neck that controls the body's metabolism. Thyroid problems are much more common in women than in men, and they are often missed because the symptoms seem ordinary.\n\nHypothyroidism (underactive thyroid) signs:\n• Weight gain without reason\n• Tiredness and feeling cold\n• Hair fall, dry skin, constipation\n• Heavy or irregular periods\n• Low mood and poor memory\n\nHyperthyroidism (overactive thyroid) signs:\n• Weight loss despite eating well\n• Feeling hot and sweating\n• Fast heartbeat, anxiety, tremors\n• Light or missed periods\n\nWhy it matters for women:\nThyroid imbalance can affect periods, fertility and pregnancy. Women planning a pregnancy or who are pregnant should get their thyroid checked.\n\nDiagnosis and treatment:\nA simple blood test (TSH, with T3 and T4 if needed) can check your thyroid. Most thyroid problems are well controlled with a daily tablet and regular tests.\n\nTip: Take thyroid medicine on an empty stomach, at the same time every day.\n\nConsult a doctor at Hansraj Memorial Hospital, Vinay Nagar, Gwalior.",
+  "prompt": "Minimal illustration of a butterfly-shaped thyroid icon over a woman's neck silhouette, teal and lavender palette.\n\nFormat: 4:3 landscape, 1200 × 900 px (Google Business Profile post size).\nStyle: clean, modern healthcare graphic, soft natural lighting, high detail, professional and warm, not cartoonish.\nBrand colours to include: deep teal blue (#1d5c7a), fresh green, white and light grey.\nPeople (if shown): Indian people with natural, respectful expressions and modest clothing.\nComposition: main subject centre-right; keep the top-left third plain and uncluttered for a heading and the logo.\nAvoid: any text, letters or numbers, watermarks, logos, gore or graphic medical detail, close-up needles, distorted hands or faces.",
+  "headline": "Thyroid problems in women"
+ },
+ {
+  "id": "p-2026-12-10",
+  "date": "2026-12-10",
+  "lang": "HI",
+  "topic": "इमरजेंसी के संकेत: देर न करें",
+  "kw": "hospital near me Gwalior",
+  "cta": "call",
+  "fest": null,
+  "check": false,
+  "caption": "कुछ स्थितियों में हर मिनट कीमती होता है। इन लक्षणों में घरेलू नुस्खों या इंतज़ार में समय न गंवाएं, तुरंत नज़दीकी अस्पताल पहुंचें:\n\n• सीने में तेज़ दर्द, दबाव या भारीपन, खासकर पसीने के साथ\n• अचानक बोलने में दिक्कत, चेहरा टेढ़ा होना या शरीर के एक हिस्से में कमज़ोरी\n• सांस लेने में गंभीर तकलीफ़\n• बेहोशी या दौरा (मिर्गी जैसा)\n• ज़्यादा खून बहना जो रुक न रहा हो\n• सिर में गंभीर चोट, खासकर उल्टी या बेहोशी के साथ\n• ज़हर, कीटनाशक या गलत दवाई खा लेना\n• गंभीर रूप से जलना\n• प्रेगनेंसी में ज़्यादा ब्लीडिंग या तेज़ पेट दर्द\n• छोटे बच्चे में तेज़ बुखार के साथ झटके या सुस्ती\n\nऐसे समय क्या करें:\n• मरीज़ को शांत रखें और अकेला न छोड़ें\n• बेहोश व्यक्ति को कुछ खिलाएं-पिलाएं नहीं\n• ज़हर के मामले में दवाई या पैकेट साथ ले जाएं\n• मरीज़ की पुरानी रिपोर्ट्स और दवाइयों की लिस्ट साथ रखें\n\nअपने परिवार में सबको ये संकेत ज़रूर बताएं।\n\n– Hansraj Memorial Hospital, विनय नगर, ग्वालियर",
+  "prompt": "Clear safety poster: a red cross / alert icon with simple symptom icons around it, red and navy palette.\n\nFormat: 4:3 landscape, 1200 × 900 px (Google Business Profile post size).\nStyle: clean, modern healthcare graphic, soft natural lighting, high detail, professional and warm, not cartoonish.\nBrand colours to include: deep teal blue (#1d5c7a), fresh green, white and light grey.\nPeople (if shown): Indian people with natural, respectful expressions and modest clothing.\nComposition: main subject centre-right; keep the top-left third plain and uncluttered for a heading and the logo.\nAvoid: any text, letters or numbers, watermarks, logos, gore or graphic medical detail, close-up needles, distorted hands or faces.",
+  "headline": "इमरजेंसी के संकेत: देर न करें"
+ }
+];
+
+const MONTHS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const DAYS=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+const parse=d=>{const [y,m,dd]=d.split("-").map(Number);return new Date(y,m-1,dd)};
+const todayStr=(()=>{const t=new Date();return t.getFullYear()+"-"+String(t.getMonth()+1).padStart(2,"0")+"-"+String(t.getDate()).padStart(2,"0")})();
+
+let status={}; // id -> {posted, at}
+const filt={month:"all",lang:"all",status:"all"};
+let db=null;
+const LS="hansraj-hospital-gbp-status";
+try{status=JSON.parse(localStorage.getItem(LS)||"{}")||{}}catch(e){status={}}
+try{const f=JSON.parse(localStorage.getItem(LS+"-filters")||"null");if(f)Object.assign(filt,f)}catch(e){}
+
+const toastEl=document.getElementById("toast");let tt;
+function toast(msg){toastEl.textContent=msg;toastEl.classList.add("show");clearTimeout(tt);tt=setTimeout(()=>toastEl.classList.remove("show"),1600)}
+async function copy(text,label){
+  try{await navigator.clipboard.writeText(text);toast(label+" copy ho gaya")}
+  catch(e){toast("Copy nahi hua. Text select karke copy karein.")}
+}
+function isPosted(id){return !!(status[id]&&status[id].posted)}
+
+function render(){
+  const list=document.getElementById("list");
+  const nextPost=POSTS.find(p=>!isPosted(p.id)&&p.date>=todayStr)||POSTS.find(p=>!isPosted(p.id));
+  const shown=POSTS.filter(p=>{
+    const m=String(parse(p.date).getMonth()+1);
+    if(filt.month!=="all"&&m!==filt.month)return false;
+    if(filt.lang!=="all"&&p.lang!==filt.lang)return false;
+    if(filt.status==="posted"&&!isPosted(p.id))return false;
+    if(filt.status==="pending"&&isPosted(p.id))return false;
+    return true;
+  });
+  list.textContent="";
+  if(!shown.length){const e=document.createElement("div");e.className="empty";e.textContent="Is filter me koi post nahi hai.";list.append(e)}
+  // group by week (Monday start)
+  const groups=new Map();
+  for(const p of shown){const d=parse(p.date);const mon=new Date(d);mon.setDate(d.getDate()-((d.getDay()+6)%7));
+    const key=mon.toDateString();if(!groups.has(key))groups.set(key,{mon,items:[]});groups.get(key).items.push(p)}
+  for(const {mon,items} of groups.values()){
+    const sec=document.createElement("section");sec.className="week";
+    const sun=new Date(mon);sun.setDate(mon.getDate()+6);
+    const h=document.createElement("h2");h.textContent="Week · "+mon.getDate()+" "+MONTHS[mon.getMonth()]+" – "+sun.getDate()+" "+MONTHS[sun.getMonth()];
+    sec.append(h);
+    for(const p of items)sec.append(card(p,nextPost&&nextPost.id===p.id));
+    list.append(sec);
+  }
+  // summary
+  const posted=POSTS.filter(p=>isPosted(p.id)).length;
+  document.getElementById("sPosted").innerHTML=posted+" <small>/ "+POSTS.length+"</small>";
+  document.getElementById("sBar").style.width=(posted/POSTS.length*100)+"%";
+  const late=POSTS.filter(p=>!isPosted(p.id)&&p.date<todayStr).length;
+  document.getElementById("sLate").textContent=late;
+  const sn=document.getElementById("sNext");
+  if(nextPost){const d=parse(nextPost.date);sn.innerHTML="";sn.append(DAYS[d.getDay()]+", "+d.getDate()+" "+MONTHS[d.getMonth()]);const s=document.createElement("small");s.textContent=" · "+nextPost.lang;sn.append(s)}
+  else sn.textContent="Sab ho gaye";
+  document.querySelectorAll(".seg").forEach(seg=>seg.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(filt[seg.dataset.f]===b.dataset.v))));
+}
+
+function el(tag,cls,text){const e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e}
+function card(p,isNext){
+  const d=parse(p.date);const done=isPosted(p.id);
+  const a=el("article","post"+(done?" done":"")+(isNext?" next":""));
+  const dt=el("div","date");dt.append(el("span","w",DAYS[d.getDay()]),el("span","d",String(d.getDate())),el("span","m",MONTHS[d.getMonth()]));
+  const b=el("div","body");
+  const top=el("div","top");
+  top.append(el("span","chip lang",p.lang==="HI"?"Hindi":"English"));
+  if(p.fest)top.append(el("span","chip fest",p.fest));
+  if(p.check)top.append(el("span","chip check","Service confirm karo"));
+  if(isNext&&!done)top.append(el("span","chip next","Agla post"));
+  top.append(el("span","chip",p.caption.length+" / 1500 chars"));
+  const h=el("h3",null,p.topic);
+  const kw=el("div","kw");kw.append("Keyword: ");kw.append(el("b",null,p.kw));
+  const c1=el("div","block");const l1=el("div","lbl");l1.append(el("span",null,"Caption"));const bc=el("button","btn","Copy caption");bc.type="button";bc.onclick=()=>copy(p.caption,"Caption");l1.append(bc);
+  c1.append(l1,el("div","cap",p.caption));
+  const c0=el("div","block");const l0=el("div","lbl");l0.append(el("span",null,"Image par heading (Canva)"));const bh=el("button","btn","Copy heading");bh.type="button";bh.onclick=()=>copy(p.headline,"Heading");l0.append(bh);c0.append(l0,el("div","cap",p.headline));
+  const c2=el("div","block");const l2=el("div","lbl");l2.append(el("span",null,"Image prompt"));const bp=el("button","btn","Copy prompt");bp.type="button";bp.onclick=()=>copy(p.prompt,"Prompt");l2.append(bp);
+  c2.append(l2,el("div","prompt",p.prompt));
+  const c3=el("div","block");const [btnName,link]=CTA[p.cta];const l3=el("div","lbl");l3.append(el("span",null,"CTA button: "+btnName));
+  if(p.cta!=="call"){const bl=el("button","btn","Copy link");bl.type="button";bl.onclick=()=>copy(link,"Link");l3.append(bl)}
+  const ct=el("div","cta");ct.append(el("code",null,link));c3.append(l3,ct);
+  const row=el("label","done-row");const cb=document.createElement("input");cb.type="checkbox";cb.id="cb-"+p.id;cb.checked=done;
+  cb.onchange=()=>setPosted(p.id,cb.checked);row.append(cb,"Posted");
+  if(done&&status[p.id].at){const w=new Date(status[p.id].at);row.append(el("span","when","· "+w.getDate()+" "+MONTHS[w.getMonth()]))}
+  b.append(top,h,kw,c1,c0,c2,c3,row);
+  a.append(dt,b);return a;
+}
+
+async function setPosted(id,val){
+  status[id]=val?{posted:true,at:new Date().toISOString()}:{posted:false};
+  try{localStorage.setItem(LS,JSON.stringify(status))}catch(e){}
+  render();
+  if(db){try{await db.collection("status").doc(id).set(status[id]);toast(val?"Posted mark ho gaya":"Pending kar diya")}
+    catch(e){toast("Save nahi hua. Dobara tick karein.")}}
+  else toast(val?"Posted mark ho gaya (is browser me)":"Pending kar diya");
+}
+
+document.querySelectorAll(".seg").forEach(seg=>seg.addEventListener("click",e=>{
+  const b=e.target.closest("button");if(!b)return;filt[seg.dataset.f]=b.dataset.v;
+  try{localStorage.setItem(LS+"-filters",JSON.stringify(filt))}catch(e){}
+  render();
+}));
+
+render();
+
+(async()=>{
+  try{
+    db=window.claude&&window.claude.use?await window.claude.use("db"):null;
+  }catch(e){db=null}
+  const sync=document.getElementById("sync");
+  if(!db){sync.textContent="Status: sirf is browser me save";return}
+  sync.textContent="Status: sab devices pe sync";
+  db.collection("status").onSnapshot(snap=>{
+    const next={};
+    for(const d of snap.docs){const v=d.data();if(v)next[d.id]={posted:!!v.posted,at:v.at||null}}
+    status=next;
+    try{localStorage.setItem(LS,JSON.stringify(status))}catch(e){}
+    render();
+  },()=>{sync.textContent="Sync ruk gaya. Page reload karein."});
+})();
+</script>
+
+</body></html>
